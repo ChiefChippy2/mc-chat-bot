@@ -1,0 +1,28 @@
+{
+  "name": "mc-chat-bot",
+  "version": "1.0.0",
+  "description": "Cracked mc-discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChiefChippy2/mc-chat-bot.git"
+  },
+  "author": "ChiefChippy2",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ChiefChippy2/mc-chat-bot/issues"
+  },
+  "homepage": "https://github.com/ChiefChippy2/mc-chat-bot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^10.0.0",
+    "mineflayer": "^3.7.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.30.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
