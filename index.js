@@ -11,6 +11,20 @@ let client = mc.createClient({
   username: process.env.BOT_NAME,
   version: process.env.VERSION,
 });
+const endfunc = function() {
+  console.log('Reconnecting...');
+  online = false;
+  setTimeout(()=>{
+    client = mc.createClient({
+      host: process.env.HOST,
+      port: process.env.PORT || 25565,
+      username: process.env.BOT_NAME,
+      version: process.env.VERSION,
+    });
+    bindChat();
+  }, 2000);
+};
+client.on('end', endfunc);
 bindChat();
 let online = true;
 function parseMsg(msg) {
@@ -33,21 +47,6 @@ disc.on('message', (msg)=>{
   if (!msg.content||msg.content[0]==='/'||msg.content==='.ping') return;
   client.write('chat', {message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`});
 });
-const endfunc = function() {
-  console.log('Reconnecting...');
-  online = false;
-  setTimeout(()=>{
-    client = mc.createClient({
-      host: process.env.HOST,
-      port: process.env.PORT || 25565,
-      username: process.env.BOT_NAME,
-      version: process.env.VERSION,
-    });
-    bindChat();
-  }, 2000);
-};
-client.on('end', endfunc);
-
 function bindChat() {
   client.on('chat', (packet)=>{
     if (!online) console.log('(Re)connected!');
