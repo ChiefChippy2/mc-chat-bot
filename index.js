@@ -25,6 +25,7 @@ const endfunc = function() {
   }, 2000);
 };
 client.on('end', endfunc);
+client.on('error', endfunc);
 bindChat();
 let online = true;
 function parseMsg(msg) {
@@ -53,8 +54,10 @@ function bindChat() {
     online=true;
     const jsonMsg = JSON.parse(packet.message);
     if (jsonMsg?.with?.[0]?.text === process.env.BOT_NAME) return; // echo
+    console.log(jsonMsg);
     const content = parseMsg(jsonMsg);
     msgs.push(content);
   });
   client.on('end', endfunc);
+  client.on('error', endfunc);
 }
