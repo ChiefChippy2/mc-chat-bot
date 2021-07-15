@@ -46,7 +46,7 @@ disc.on('message', (msg)=>{
   if (msg.content==='.ping') msg.channel.send(`Pong!\nDiscord : ${disc.ws.ping}\nMC : ${client.latency}`).then((sent)=>setTimeout(sent.delete.bind(sent), 5000));
   setImmediate(msg.delete.bind(msg));
   if (!msg.content||msg.content[0]==='/'||msg.content==='.ping') return;
-  client.write('chat', {message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`});
+  client.write('chat', {message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`, sender: 0, position: 0});
 });
 function bindChat() {
   client.on('chat', (packet)=>{
