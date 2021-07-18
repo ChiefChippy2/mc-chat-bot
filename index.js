@@ -28,6 +28,11 @@ client.on('end', endfunc);
 client.on('error', endfunc);
 bindChat();
 let online = true;
+/**
+ * Parses mc message
+ * @param {Record<string, string|Record>} msg Message
+ * @return {string|undefined}
+ */
 function parseMsg(msg) {
   return msg.text+(msg?.extra?.map(parseMsg)?.join('')||'');
 }
@@ -43,16 +48,30 @@ disc.on('ready', async ()=>{
 });
 disc.on('message', (msg)=>{
   if (msg.author.bot||msg.channel.id!==id) return;
-  if (msg.content==='.ping') msg.channel.send(`Pong!\nDiscord : ${disc.ws.ping}\nMC : ${client.latency}`).then((sent)=>setTimeout(sent.delete.bind(sent), 5000));
+  if (msg.content==='.ping') {
+    msg.channel.send(`Pong!\nDiscord : ${disc.ws.ping}\nMC : ${client.latency}`)
+        .then((sent)=>setTimeout(sent.delete.bind(sent), 5000));
+  }
   setImmediate(msg.delete.bind(msg));
   if (!msg.content||msg.content[0]==='/'||msg.content==='.ping') return;
-  chat({message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`, sender: 0, position: 0});
+  chat({
+    // eslint-disable-next-line
+    message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`,
+    sender: 0,
+    position: 0});
 });
 const lastMsgs = [];
+/**
+ * Chats to mc server
+ * @param {Record<string, any>} payload Payload
+ */
 function chat(payload) {
   lastMsgs.push(payload.message);
   client.write('chat', payload);
 }
+/**
+ * Binds chat listener
+ */
 function bindChat() {
   client.on('chat', (packet)=>{
     if (!online) console.log('(Re)connected!');
@@ -61,6 +80,7 @@ function bindChat() {
     if (jsonMsg.translate === 'chat.disabled.options') enableChat();
     if (jsonMsg?.with?.[0]?.text === process.env.BOT_NAME) return; // echo
     const content = parseMsg(jsonMsg);
+    // eslint-disable-next-line
     if (content.trim().startsWith(`<${process.env.BOT_NAME}>`)) lastMsgs.shift(); // Placeholder... @TODO
     if (content) msgs.push(content);
   });
@@ -69,6 +89,9 @@ function bindChat() {
   client.on('error', endfunc);
 }
 
+/**
+ * Enables chat
+ */
 function enableChat() {
   client.write('settings', {
     bodyParts: 0, // Not important
@@ -78,9 +101,11 @@ function enableChat() {
     chatFlags: 0, // 0 = everything
   });
   setTimeout(catchUp, 3000);
-  return true;
 }
 
+/**
+ * Catches up on unsent messages hopefully
+ */
 function catchUp() {
   while (lastMsgs.length) client.write('chat', {message: lastMsgs.shift()});
 }
