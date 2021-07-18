@@ -46,18 +46,41 @@ disc.on('message', (msg)=>{
   if (msg.content==='.ping') msg.channel.send(`Pong!\nDiscord : ${disc.ws.ping}\nMC : ${client.latency}`).then((sent)=>setTimeout(sent.delete.bind(sent), 5000));
   setImmediate(msg.delete.bind(msg));
   if (!msg.content||msg.content[0]==='/'||msg.content==='.ping') return;
-  client.write('chat', {message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`, sender: 0, position: 0});
+  chat({message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`, sender: 0, position: 0});
 });
+const lastMsgs = [];
+function chat(payload) {
+  lastMsgs.push(payload.message);
+  client.write('chat', payload);
+}
 function bindChat() {
   client.on('chat', (packet)=>{
     if (!online) console.log('(Re)connected!');
     online=true;
     const jsonMsg = JSON.parse(packet.message);
+    if (jsonMsg.translate === 'chat.disabled.options') enableChat();
     if (jsonMsg?.with?.[0]?.text === process.env.BOT_NAME) return; // echo
-    console.log(jsonMsg);
     const content = parseMsg(jsonMsg);
-    msgs.push(content);
+    if (content.trim().startsWith(`<${process.env.BOT_NAME}>`)) lastMsgs.shift(); // Placeholder... @TODO
+    if (content) msgs.push(content);
   });
+  client.once('chat', enableChat);
   client.on('end', endfunc);
   client.on('error', endfunc);
+}
+
+function enableChat() {
+  client.write('settings', {
+    bodyParts: 0, // Not important
+    locale: 'en_GB',
+    viewDistance: 2,
+    chatColor: false, // No need for colors
+    chatFlags: 0, // 0 = everything
+  });
+  setTimeout(catchUp, 3000);
+  return true;
+}
+
+function catchUp() {
+  while (lastMsgs.length) client.write('chat', {message: lastMsgs.shift()});
 }
