@@ -94,10 +94,10 @@ function bindChat() {
  */
 function enableChat() {
   client.write('settings', {
-    bodyParts: 0, // Not important
+    skinParts: 0, // Not important
     locale: 'en_GB',
     viewDistance: 2,
-    chatColor: false, // No need for colors
+    chatColors: false, // No need for colors
     chatFlags: 0, // 0 = everything
   });
   setTimeout(catchUp, 3000);
