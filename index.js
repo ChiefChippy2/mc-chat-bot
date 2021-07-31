@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const disc = new Discord.Client({intents: ['GUILD_MESSAGES']});
 const id = process.env.CHANNEL;
 const token = process.env.TOKEN;
+const owners = Array.flat([process.env.OWNERS?.split?.(' ')||'']);
 disc.login(token);
 let client = mc.createClient({
   host: process.env.HOST,
@@ -53,10 +54,14 @@ disc.on('message', (msg)=>{
         .then((sent)=>setTimeout(sent.delete.bind(sent), 5000));
   }
   setImmediate(msg.delete.bind(msg));
+  // eslint-disable-next-line
+  if (msg.content[0]==='/' && owners.include(msg.author.id)) return chat({
+    message: msg.content,
+  });
   if (!msg.content||msg.content[0]==='/'||msg.content==='.ping') return;
   chat({
     // eslint-disable-next-line
-    message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/^(.{200}).+$/, '$1...')}`,
+    message: `[Discord] ${msg.member.displayName} : ${msg.cleanContent.replace(/§./g,'').replace(/^(.{200}).+$/, '$1...')}`,
     sender: 0,
     position: 0});
 });
@@ -79,7 +84,7 @@ function bindChat() {
     const jsonMsg = JSON.parse(packet.message);
     if (jsonMsg.translate === 'chat.disabled.options') enableChat();
     if (jsonMsg?.with?.[0]?.text === process.env.BOT_NAME) return; // echo
-    const content = parseMsg(jsonMsg);
+    const content = parseMsg(jsonMsg).replace(/§./g, '');
     // eslint-disable-next-line
     if (content.trim().startsWith(`<${process.env.BOT_NAME}>`)) lastMsgs.shift(); // Placeholder... @TODO
     if (content) msgs.push(content);
