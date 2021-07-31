@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const disc = new Discord.Client({intents: ['GUILD_MESSAGES']});
 const id = process.env.CHANNEL;
 const token = process.env.TOKEN;
-const owners = Array.flat([process.env.OWNERS?.split?.(' ')||'']);
+const owners = [process.env.OWNERS?.split?.(' ')||''].flat();
 disc.login(token);
 let client = mc.createClient({
   host: process.env.HOST,
