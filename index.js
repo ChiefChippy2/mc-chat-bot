@@ -55,7 +55,7 @@ disc.on('message', (msg)=>{
   }
   setImmediate(msg.delete.bind(msg));
   // eslint-disable-next-line
-  if (msg.content[0]==='/' && owners.include(msg.author.id)) return chat({
+  if (msg.content[0]==='/' && owners.includes(msg.author.id)) return chat({
     message: msg.content,
   });
   if (!msg.content||msg.content[0]==='/'||msg.content==='.ping') return;
