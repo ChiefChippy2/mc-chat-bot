@@ -82,12 +82,13 @@ function bindChat() {
     if (!online) console.log('(Re)connected!');
     online=true;
     const jsonMsg = JSON.parse(packet.message);
+    if (process.env.DEBUG) console.log(jsonMsg);
     if (jsonMsg.translate === 'chat.disabled.options') enableChat();
     if (jsonMsg?.with?.[0]?.text === process.env.BOT_NAME) return; // echo
     const content = parseMsg(jsonMsg).replace(/§./g, '');
     // eslint-disable-next-line
     if (content.trim().startsWith(`<${process.env.BOT_NAME}>`)) lastMsgs.shift(); // Placeholder... @TODO
-    if (content) msgs.push(content);
+    if (content && content!='undefined') msgs.push(content);
   });
   client.once('chat', enableChat);
   client.on('end', endfunc);
