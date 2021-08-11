@@ -1,6 +1,7 @@
 require('dotenv').config();
 const mc = require('minecraft-protocol');
 const Discord = require('discord.js');
+const handlePercent = require('./utils');
 const disc = new Discord.Client({intents: ['GUILD_MESSAGES']});
 const id = process.env.CHANNEL;
 const token = process.env.TOKEN;

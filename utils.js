@@ -1,4 +1,4 @@
-const translation = require('mc_text.json');
+const translation = require('./mc_text.json');
 /**
  * Handles C-style formatting with %
  * @param {any[]} context Context
@@ -12,7 +12,7 @@ function handlePercent(context = [], x = '') {
     if (el.translate) return handlePercent(el.with, el.translate);
     return el.text||el.toString();
   });
-  return x.replace(/%(.)/, (_, type)=>{
+  return x.replace(/%(.)/g, (_, type)=>{
     switch (type) {
       case 's': return context.shift();
       case 'd': return context.shift().toString();
