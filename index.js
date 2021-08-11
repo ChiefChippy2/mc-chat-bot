@@ -35,7 +35,11 @@ let online = true;
  * @return {string|undefined}
  */
 function parseMsg(msg) {
-  return msg.text+(msg?.extra?.map(parseMsg)?.join('')||'');
+  if (msg.translate) {
+    return handlePercent(msg.with, msg.translate);
+  } else {
+    return msg.text+(msg?.extra?.map(parseMsg)?.join('')||'');
+  }
 }
 let msgs=[];
 disc.on('ready', async ()=>{
