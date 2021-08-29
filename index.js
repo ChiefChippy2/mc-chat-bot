@@ -6,6 +6,7 @@ const disc = new Discord.Client({intents: ['GUILD_MESSAGES']});
 const id = process.env.CHANNEL;
 const token = process.env.TOKEN;
 const owners = [process.env.OWNERS?.split?.(' ')||''].flat();
+let lastDisconnects = 0;
 disc.login(token);
 let client = mc.createClient({
   host: process.env.HOST,
@@ -13,8 +14,17 @@ let client = mc.createClient({
   username: process.env.BOT_NAME,
   version: process.env.VERSION,
 });
-const endfunc = function() {
+const endfunc = function(...args) {
+  if(this === true) console.log("Error : ", ...args); // Logs any eventual error
   console.log('Reconnecting...');
+
+  // Limit reconnects
+  lastDisconnects ++;
+  setTimeout(()=>lastDisconnects--, 20000);
+
+  let delay = 2000;
+  if (lastDisconnects > 5) delay += 7500; // If there had been too many disconnects, wait a little more
+
   online = false;
   setTimeout(()=>{
     client = mc.createClient({
@@ -24,10 +34,8 @@ const endfunc = function() {
       version: process.env.VERSION,
     });
     bindChat();
-  }, 2000);
+  }, delay);
 };
-client.on('end', endfunc);
-client.on('error', endfunc);
 bindChat();
 let online = true;
 /**
@@ -97,7 +105,7 @@ function bindChat() {
   });
   client.once('chat', enableChat);
   client.on('end', endfunc);
-  client.on('error', endfunc);
+  client.on('error', endfunc.bind(true));
 }
 
 /**
